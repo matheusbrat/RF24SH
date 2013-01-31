@@ -13,6 +13,8 @@
 class MasterStation: public GenericStation {
 protected:
 	uint8_t nextId;
+	uint8_t treeTalkTo[10][5];
+	uint8_t levels[10];
 public:
 	MasterStation();
 	virtual ~MasterStation();
@@ -23,6 +25,8 @@ public:
 	void receivedSetConfig(PMessage p);
 
 	uint8_t getParent(PMessage p);
+	uint8_t freePipes(uint8_t id);
+	uint8_t getLevel(uint8_t id);
 
 };
 

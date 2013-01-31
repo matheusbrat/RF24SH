@@ -23,8 +23,8 @@ Station::Station() {
 	while ((millis() - sent_time) < (256 * 100)) {
 		read();
 	}
-	Serial.println("Finish discovering who is listening");
-	Serial.println("ASKING FOR CONFIGURATION");
+	//Serial.println("Finish discovering who is listening");
+	//Serial.println("ASKING FOR CONFIGURATION");
 	sendAskConfig();
 	sent_time = millis();
 	while ((millis() - sent_time) < (256 * 100)) {
@@ -69,13 +69,13 @@ void Station::sendAskConfig() {
 	Serial.print(" ");
 	PMessage c = 0;
 	// THIS IF IS JUST FOR TESTING PURPOSE!
-	if (idSelection[1] != 0) {
-		c = PMessage(PMessage::PROTOCOL, PMessage::ASK_CONFIG, idSelection[1],
-				idSelection[0], idSelection[2], idSelection[3], idSelection[4]);
-	} else {
-		c = PMessage(PMessage::PROTOCOL, PMessage::ASK_CONFIG, idSelection[0],
-				idSelection[1], idSelection[2], idSelection[3], idSelection[4]);
-	}
+	/*if (idSelection[1] != 0) {
+	 c = PMessage(PMessage::PROTOCOL, PMessage::ASK_CONFIG, idSelection[1],
+	 idSelection[0], idSelection[2], idSelection[3], idSelection[4]);
+	 } else {*/
+	c = PMessage(PMessage::PROTOCOL, PMessage::ASK_CONFIG, idSelection[0],
+			idSelection[1], idSelection[2], idSelection[3], idSelection[4]);
+	//}
 	write(c);
 }
 
@@ -121,8 +121,8 @@ void Station::receivedAskConfig(PMessage p) {
 	if (p.id_dest == id) {
 		flag = RETRANSMIT;
 		Serial.println("retransmit ASK_CONFIG");
-		forward = p.id_dest;
-		p.id_dest = parentPipe;
+		//forward = p.id_dest;
+		//p.id_dest = parentPipe;
 		write(p);
 	}
 }
@@ -131,7 +131,7 @@ void Station::receivedSetConfig(PMessage p) {
 	if (flag == RETRANSMIT) {
 		Serial.println("retransmit SET_CONFIG");
 		flag = NOTHING;
-		p.id_dest = forward;
+		//p.id_dest = forward;
 		if (p.total == id) {
 			// I'm his parent, open new pipe;
 			registerPipe(findOpenPipe(), p.value);
@@ -147,6 +147,15 @@ void Station::receivedSetConfig(PMessage p) {
 		parentPipe = p.total; //c.id_from;
 		id = p.value;
 		level = p.level;
+	} else if (flag == NOTHING) {
+		if (p.total == id) {
+			// I'm his parent, open new pipe;
+			registerPipe(findOpenPipe(), p.value);
+		}
+		if (indirectChild(p.total)) {
+			registerIndirecChild(p.total, p.value);
+		}
+		print();
 	}
 }
 

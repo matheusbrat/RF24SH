@@ -8,7 +8,7 @@
 #include "GenericStation.h"
 
 GenericStation::GenericStation() :
-	radio(9, 10) {
+		radio(9, 10) {
 	// FIX NUMBER FOUR MAGIC NUMBER
 	for (int i = 0; i < 4; i++) {
 		childPipes[i] = 0;
@@ -40,14 +40,14 @@ uint8_t GenericStation::findOpenPipe() {
 void GenericStation::registerIndirecChild(uint8_t parent, uint8_t id) {
 	uint8_t pipe = findChildPipe(parent);
 	uint8_t * list = (uint8_t*) realloc(childNodes[pipe],
-			sizeof(uint8_t) * (childNodesSize[pipe] + 1));
+			(sizeof(uint8_t) * (childNodesSize[pipe] + 1)));
 	list[childNodesSize[pipe]] = id;
 	childNodes[pipe] = list;
 	childNodesSize[pipe] = childNodesSize[pipe] + 1;
 }
 
 bool GenericStation::write(PMessage p) {
-	delay(5);
+	delay(10);
 	radio.stopListening();
 	radio.openWritingPipe(PROTO_PIPE);
 	short attempts = 5;
@@ -58,7 +58,6 @@ bool GenericStation::write(PMessage p) {
 	Serial.println("SENDING");
 	p.print();
 	radio.startListening();
-	delay(5);
 	return ok;
 }
 
@@ -126,13 +125,13 @@ void GenericStation::registerPipe(uint8_t pipeNumber, uint8_t id) {
 	childPipes[pipeNumber] = id;
 	if (childNodesSize[pipeNumber] == 0) {
 		uint8_t * list = (uint8_t*) malloc(
-				sizeof(uint8_t) * (childNodesSize[pipeNumber] + 1));
+				(sizeof(uint8_t) * (childNodesSize[pipeNumber] + 1)));
 		list[childNodesSize[pipeNumber]] = id;
 		childNodes[pipeNumber] = list;
 		childNodesSize[pipeNumber] = childNodesSize[pipeNumber] + 1;
 	} else {
 		uint8_t * list = (uint8_t*) realloc(childNodes[pipeNumber],
-				sizeof(uint8_t) * (childNodesSize[pipeNumber] + 1));
+				(sizeof(uint8_t) * (childNodesSize[pipeNumber] + 1)));
 		list[childNodesSize[pipeNumber]] = id;
 		childNodes[pipeNumber] = list;
 		childNodesSize[pipeNumber] = childNodesSize[pipeNumber] + 1;
@@ -151,23 +150,19 @@ uint8_t GenericStation::findChildPipe(uint8_t id) {
 	return 0xFF;
 }
 
-void GenericStation::receivedWhoListen(PMessage p)
-{
+void GenericStation::receivedWhoListen(PMessage p) {
 	// Class that extend this must implement!
 }
 
-void GenericStation::receivedIListen(PMessage p)
-{
+void GenericStation::receivedIListen(PMessage p) {
 	// Class that extend this must implement!
 }
 
-void GenericStation::receivedAskConfig(PMessage p)
-{
+void GenericStation::receivedAskConfig(PMessage p) {
 	// Class that extend this must implement!
 }
 
-void GenericStation::receivedSetConfig(PMessage p)
-{
+void GenericStation::receivedSetConfig(PMessage p) {
 	// Class that extend this must implement!
 }
 

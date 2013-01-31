@@ -34,7 +34,6 @@ protected:
 	virtual void receivedAskConfig(PMessage p);
 	virtual void receivedSetConfig(PMessage p);
 
-
 public:
 	void read();
 	bool write(PMessage p);
