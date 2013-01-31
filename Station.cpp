@@ -103,13 +103,13 @@ void Station::receivedIListen(PMessage p) {
 					bigger = i;
 				}
 			}
-			if (p.level < levelSelection[bigger]) {
-				levelSelection[bigger] = p.level;
+			if (p.value2 < levelSelection[bigger]) {
+				levelSelection[bigger] = p.value2;
 				idSelection[bigger] = p.id_from;
 			}
 		} else {
 			idSelection[control] = p.id_from;
-			levelSelection[control] = p.level;
+			levelSelection[control] = p.value2;
 			control++;
 			Serial.print("CONTROL: ");
 			Serial.println(control);
@@ -132,28 +132,28 @@ void Station::receivedSetConfig(PMessage p) {
 		Serial.println("retransmit SET_CONFIG");
 		flag = NOTHING;
 		//p.id_dest = forward;
-		if (p.total == id) {
+		if (p.value3 == id) {
 			// I'm his parent, open new pipe;
 			registerPipe(findOpenPipe(), p.value);
 		}
-		if (indirectChild(p.total)) {
-			registerIndirecChild(p.total, p.value);
+		if (indirectChild(p.value3)) {
+			registerIndirecChild(p.value3, p.value);
 		}
 		write(p);
 		print();
 	} else if (flag == WAITING) {
 		Serial.println("Received set_config");
 		flag = NOTHING;
-		parentPipe = p.total; //c.id_from;
+		parentPipe = p.value3; //c.id_from;
 		id = p.value;
-		level = p.level;
+		level = p.value2;
 	} else if (flag == NOTHING) {
-		if (p.total == id) {
+		if (p.value3 == id) {
 			// I'm his parent, open new pipe;
 			registerPipe(findOpenPipe(), p.value);
 		}
-		if (indirectChild(p.total)) {
-			registerIndirecChild(p.total, p.value);
+		if (indirectChild(p.value3)) {
+			registerIndirecChild(p.value3, p.value);
 		}
 		print();
 	}

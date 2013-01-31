@@ -11,6 +11,9 @@
 #include "RF24.h"
 #include "PMessage.h"
 
+#define PROTO_PIPE 0x7878787878LL
+#define PROTO_PIPE_PREFIX 0xABABABAB
+
 class GenericStation {
 protected:
 	RF24 radio; // CS, CE PINS
@@ -34,10 +37,14 @@ protected:
 	virtual void receivedAskConfig(PMessage p);
 	virtual void receivedSetConfig(PMessage p);
 
+	bool writePipe(uint64_t pipe, PMessage p);
+	bool write(PMessage p);
+
 public:
 	void read();
-	bool write(PMessage p);
+	bool writePipe(uint8_t pipeNumber, PMessage p);
 	GenericStation();
+
 	virtual ~GenericStation();
 };
 

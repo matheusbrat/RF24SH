@@ -81,8 +81,8 @@ void MasterStation::receivedAskConfig(PMessage p) {
 		treeTalkTo[nextId][0] = p.id_dest;
 		treeTalkTo[nextId][1] = p.id_from;
 		treeTalkTo[nextId][2] = p.value;
-		treeTalkTo[nextId][3] = p.level;
-		treeTalkTo[nextId][4] = p.total;
+		treeTalkTo[nextId][3] = p.value2;
+		treeTalkTo[nextId][4] = p.value3;
 		Serial.println("sending set_config");
 		uint8_t parent = getParent(p);
 		PMessage r = PMessage(PMessage::PROTOCOL, PMessage::SET_CONFIG,
@@ -90,8 +90,6 @@ void MasterStation::receivedAskConfig(PMessage p) {
 				(uint8_t) (getLevel(parent) + 1), parent);
 		levels[nextId] = getLevel(parent) + 1;
 		if (parent == id) {
-			Serial.print("NEXT ID ");
-			Serial.println(nextId);
 			registerPipe(findOpenPipe(), nextId);
 		} else {
 			registerIndirecChild(parent, nextId);

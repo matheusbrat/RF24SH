@@ -47,9 +47,21 @@ void GenericStation::registerIndirecChild(uint8_t parent, uint8_t id) {
 }
 
 bool GenericStation::write(PMessage p) {
+	writePipe((uint64_t) PROTO_PIPE, p);
+}
+
+bool GenericStation::writePipe(uint8_t pipeNumber, PMessage p) {
+	if (childPipes[pipeNumber] != 0) {
+		uint64_t pipe = (PROTO_PIPE_PREFIX << 8) | childPipes[pipeNumber];
+		return writePipe(pipe, p);
+	}
+	return false;
+}
+
+bool GenericStation::writePipe(uint64_t pipe, PMessage p) {
 	delay(10);
 	radio.stopListening();
-	radio.openWritingPipe(PROTO_PIPE);
+	radio.openWritingPipe(pipe);
 	short attempts = 5;
 	boolean ok = false;
 	do {
@@ -59,6 +71,7 @@ bool GenericStation::write(PMessage p) {
 	p.print();
 	radio.startListening();
 	return ok;
+
 }
 
 void GenericStation::print() {

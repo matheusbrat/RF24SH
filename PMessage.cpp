@@ -7,16 +7,16 @@
 
 #include "PMessage.h"
 
-PMessage::PMessage(PMessage::TYPE _pmsg, PMessage::CMD _t, uint8_t _id_dest, uint8_t _id_from, uint8_t _value, uint8_t _level,
-		uint8_t _total) {
+PMessage::PMessage(PMessage::TYPE _pmsg, PMessage::CMD _t, uint8_t _id_dest, uint8_t _id_from, uint8_t _value, uint8_t _value2,
+		uint8_t _value3) {
 	proto = 0;
 	proto = SET_MSG_PROT(proto, _pmsg);
 	proto = SET_MSG_TYPE(proto, _t);
 	id_dest = _id_dest;
 	id_from = _id_from;
 	value = _value;
-	level = _level;
-	total = _total;
+	value2 = _value2;
+	value3 = _value3;
 }
 
 PMessage::PMessage(uint8_t b[6]) {
@@ -25,8 +25,8 @@ PMessage::PMessage(uint8_t b[6]) {
 	id_dest = b[1];
 	id_from = b[2];
 	value = b[3];
-	level = b[4];
-	total = b[5];
+	value2 = b[4];
+	value3 = b[5];
 }
 
 bool PMessage::is_protocol() {
@@ -50,10 +50,10 @@ void PMessage::print() {
 	Serial.println(id_from, HEX);	
 	Serial.print("VALUE ");
 	Serial.println(value, HEX);	
-	Serial.print("LEVEL ");
-	Serial.println(level, HEX);	
-	Serial.print("TOTAL? ");
-	Serial.println(total, HEX);	
+	Serial.print("VALUE2 ");
+	Serial.println(value2, HEX);	
+	Serial.print("VALUE3 ");
+	Serial.println(value3, HEX);	
 }
 
 

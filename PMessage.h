@@ -14,9 +14,6 @@
 #define SET_MSG_PROT(I, V) I | (V << 7)
 #define GET_MSG_TYPE(V) (V & 0x60) >> 5
 #define SET_MSG_TYPE(I, V) I | (V << 5)
-#define PROTO_PIPE 0x7878787878LL
-#define PROTO_PIPE_PREFIX 0xABABABAB
-
 
 class PMessage {
 public:
@@ -26,7 +23,7 @@ public:
 
 	PMessage();
 	~PMessage();
-	uint8_t proto, id_dest, id_from, value, level, total;
+	uint8_t proto, id_dest, id_from, value, value2, value3;
 
 	PMessage(TYPE _pmsg, CMD _t, uint8_t id_dest, uint8_t id_from, uint8_t _value, uint8_t _level, uint8_t _total);
 	PMessage(uint8_t b[6]);

@@ -273,12 +273,12 @@ void Protocol::read() {
 						Serial.println("retransmit SET_CONFIG");
 						flag = NOTHING;
 						c.id_dest = forward;
-						if(c.total == id) {
+						if(c.value3 == id) {
 							// I'm his parent, open new pipe;							
 							registerPipe(findOpenPipe(), c.value);
 						}
-						if(indirectChild(c.total)) {
-							registerIndirecChild(c.total, c.value);
+						if(indirectChild(c.value3)) {
+							registerIndirecChild(c.value3, c.value);
 						}
 						write(c);
 						print();
@@ -305,8 +305,8 @@ void Protocol::read() {
 
 
 void Protocol::received_set_config(PMessage c) {
-	parentId = c.total; //c.id_from;
-	parentPipe = c.total; //c.id_from;
+	parentId = c.value3; //c.id_from;
+	parentPipe = c.value3; //c.id_from;
 	id = c.value;
 	level = c.level;
 }
