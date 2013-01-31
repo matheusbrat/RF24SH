@@ -211,10 +211,6 @@ uint8_t Protocol::findChildPipe(uint8_t id) {
 void Protocol::registerIndirecChild(uint8_t parent, uint8_t id) {
 	uint8_t pipe = findChildPipe(parent);
 	uint8_t * list = (uint8_t*) realloc(childNodes[pipe], sizeof(uint8_t) * (childNodesSize[pipe] + 1));
-	//uint8_t list[childNodesSize[pipe]];
-	//uint8_t * tmp = childNodes[pipe];
-	//memcpy(list, childNodes[pipe], (childNodesSize[pipe] - 1));
-	//delete(tmp);
 	list[childNodesSize[pipe]] = id;
 	childNodes[pipe] = list;
 	childNodesSize[pipe] = childNodesSize[pipe] + 1;
@@ -338,9 +334,6 @@ void Protocol::received_i_am_listening(PMessage c) {
 			Serial.println(control);
 		}
 	}
-}
-
-bool Protocol::is_direct_child(uint8_t child) {
 }
 
 void Protocol::print() { 
