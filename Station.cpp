@@ -18,21 +18,26 @@ Station::Station() {
     control = 0;
 
     Serial.println("DISCOVER WHO IS LISTENING");
-    sendWhoListen();
-    long sent_time = millis();
-    while ((millis() - sent_time) < (256 * 100)) {
-        readProtocol();
+    bool askConfig = false;
+    long sent_time;
+    while (!askConfig) {
+        sendWhoListen();
+        sent_time = millis();
+        while ((millis() - sent_time) < (256 * 100)) {
+            readProtocol();
+        }
+        askConfig = sendAskConfig();
     }
-    //Serial.println("Finish discovering who is listening");
-    //Serial.println("ASKING FOR CONFIGURATION");
-    sendAskConfig();
-    sent_time = millis();
-    while ((millis() - sent_time) < (256 * 100)) {
-        readProtocol();
+
+    while (id == 0x00) {
+        sent_time = millis();
+        while ((millis() - sent_time) < (256 * 100)) {
+            readProtocol();
+        }
+        Serial.println("Finish ASKING FOR CONFIGURATION");
+        Serial.println("SETUP START REGULAR TASK");
+        print();
     }
-    Serial.println("Finish ASKING FOR CONFIGURATION");
-    Serial.println("SETUP START REGULAR TASK");
-    print();
 }
 
 void Station::sendWhoListen() {
@@ -41,7 +46,7 @@ void Station::sendWhoListen() {
     writeProtocol(c);
 }
 
-void Station::sendAskConfig() {
+bool Station::sendAskConfig() {
     uint8_t temp = 0;
     uint8_t tempId = 0;
     flag = WAITING;
@@ -57,30 +62,34 @@ void Station::sendAskConfig() {
             }
         }
     }
-    Serial.print(idSelection[0], HEX);
-    Serial.print(" ");
-    Serial.print(idSelection[1], HEX);
-    Serial.print(" ");
-    Serial.print(idSelection[2], HEX);
-    Serial.print(" ");
-    Serial.print(idSelection[3], HEX);
-    Serial.print(" ");
-    Serial.print(idSelection[4], HEX);
-    Serial.print(" ");
-    PMessage c = 0;
-    // THIS IF IS JUST FOR TESTING PURPOSE!
-    /*if (idSelection[1] != 0) {
-     c = PMessage(PMessage::PROTOCOL, PMessage::ASK_CONFIG, idSelection[1],
-     idSelection[0], idSelection[2], idSelection[3], idSelection[4]);
-     } else {*/
-    c = PMessage(PMessage::PROTOCOL, PMessage::ASK_CONFIG, idSelection[0],
+    if (idSelection[0] != 0x00) {
+        Serial.print(idSelection[0], HEX);
+        Serial.print(" ");
+        Serial.print(idSelection[1], HEX);
+        Serial.print(" ");
+        Serial.print(idSelection[2], HEX);
+        Serial.print(" ");
+        Serial.print(idSelection[3], HEX);
+        Serial.print(" ");
+        Serial.print(idSelection[4], HEX);
+        Serial.print(" ");
+        PMessage c = 0;
+        // THIS IF IS JUST FOR TESTING PURPOSE!
+        /*if (idSelection[1] != 0) {
+         c = PMessage(PMessage::PROTOCOL, PMessage::ASK_CONFIG, idSelection[1],
+         idSelection[0], idSelection[2], idSelection[3], idSelection[4]);
+         } else {*/
+        c = PMessage(PMessage::PROTOCOL, PMessage::ASK_CONFIG, idSelection[0],
                 idSelection[1], idSelection[2], idSelection[3], idSelection[4]);
-    if(idSelection[0] == 0x01) {
-        c.proto = SET_MSG_DEST(c.proto, 1);
-    }
+        if (idSelection[0] == 0x01) {
+            c.proto = SET_MSG_DEST(c.proto, 1);
+        }
 
-    //}
-    writeProtocol(c);
+        //}
+        writeProtocol(c);
+        return true;
+    }
+    return false;
 }
 
 void Station::receivedWhoListen(PMessage p) {
@@ -127,7 +136,7 @@ void Station::receivedAskConfig(PMessage p) {
         if (parentPipe == 0x01) {
             p.proto = SET_MSG_DEST(p.proto, 1);
         }
-        if(p.id_dest == id) {
+        if (p.id_dest == id) {
             flag = RETRANSMIT_FIRST;
         }
         Serial.println("retransmit ASK_CONFIG");
@@ -150,7 +159,7 @@ void Station::receivedSetConfig(PMessage p) {
         if (indirectChild(p.value3)) {
             registerIndirecChild(p.value3, p.value);
         }
-        if(flag == RETRANSMIT_FIRST) {
+        if (flag == RETRANSMIT_FIRST) {
             p.proto = SET_MSG_DEST(p.proto, 1);
         }
         writeProtocol(p);
