@@ -13,7 +13,7 @@
 class Station: public GenericStation {
 protected:
 	enum FLAGS {
-		NOTHING, RETRANSMIT, WAITING
+		NOTHING, RETRANSMIT_FIRST, RETRANSMIT, WAITING
 	};
 
 	uint8_t flag;

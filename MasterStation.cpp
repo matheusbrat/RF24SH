@@ -19,6 +19,8 @@ MasterStation::MasterStation() {
 	level = 0;
 	id = 1;
 	nextId = 2;
+    radio.openReadingPipe(1, ID_TO_PIPE(0x00));
+
 }
 
 uint8_t MasterStation::freePipes(uint8_t id) {
@@ -69,15 +71,27 @@ void MasterStation::receivedWhoListen(PMessage p) {
 	PMessage c = PMessage(PMessage::PROTOCOL, PMessage::I_LISTEN,
 			(uint8_t) 0x00, (uint8_t) id, 0x00, (uint8_t) level,
 			(uint8_t) 0x00);
-	write(c);
+	Serial.println("sending I_LISTEN");
+	writeProtocol(c);
 }
 
 void MasterStation::receivedIListen(PMessage p) {
 	// MASTER DOESN'T DO ANYTHING WHEN RECEIVE THIS!
 }
+void MasterStation::testMessage() {
+    PMessage t = PMessage(PMessage::TUSER, PMessage::CUSER, (nextId-1), 0x01, 233, 255, 100);
+    writePipe((uint8_t) 0,t);
+}
 
 void MasterStation::receivedAskConfig(PMessage p) {
-	if (p.id_dest == id) {
+    Serial.print("MY ID: ");
+    Serial.print(id);
+    Serial.print(" DEST ID ");
+    Serial.print(p.id_dest);
+    Serial.print(" MSG DEST ");
+    Serial.println(p.proto, HEX);
+	if (p.id_dest == id || GET_MSG_DEST(p.proto) == 1) {
+	    Serial.println("ENTROU AQUI");
 		treeTalkTo[nextId][0] = p.id_dest;
 		treeTalkTo[nextId][1] = p.id_from;
 		treeTalkTo[nextId][2] = p.value;
@@ -89,12 +103,15 @@ void MasterStation::receivedAskConfig(PMessage p) {
 				(uint8_t) 0x00, (uint8_t) id, nextId,
 				(uint8_t) (getLevel(parent) + 1), parent);
 		levels[nextId] = getLevel(parent) + 1;
+		if(GET_MSG_DEST(p.proto) == 1) {
+		    r.proto = SET_MSG_DEST(r.proto, 1);
+		}
 		if (parent == id) {
 			registerPipe(findOpenPipe(), nextId);
 		} else {
 			registerIndirecChild(parent, nextId);
 		}
-		write(r);
+		writeProtocol(r);
 		nextId++;
 		print();
 	}

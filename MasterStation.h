@@ -27,7 +27,7 @@ public:
 	uint8_t getParent(PMessage p);
 	uint8_t freePipes(uint8_t id);
 	uint8_t getLevel(uint8_t id);
-
+	void testMessage();
 };
 
 #endif /* MASTERSTATION_H_ */
