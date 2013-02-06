@@ -24,7 +24,6 @@ GenericStation::GenericStation() :
     radio.setPayloadSize(sizeof(PMessage));
     radio.openReadingPipe(0, PROTO_PIPE);
     radio.startListening();
-    radio.printDetails();
 }
 
 uint8_t GenericStation::findOpenPipe() {
@@ -58,17 +57,18 @@ bool GenericStation::writePipe(uint8_t pipeNumber, PMessage p) {
 }
 
 bool GenericStation::writePipe(uint64_t pipe, PMessage p) {
-    delay(10);
+    delay(5);
     radio.stopListening();
     radio.openWritingPipe(pipe);
     short attempts = 5;
     boolean ok = false;
     do {
+        delay(10 - (attempts * 2));
         ok = radio.write(&p, sizeof(PMessage));
     } while (!ok && --attempts);
     Serial.print("SENDING TO ");
-    Serial.print((uint32_t) pipe);
-    if(ok)
+    Serial.print((uint32_t) pipe, HEX);
+    if (ok)
         Serial.println(" ok...");
     else
         Serial.println(" failed... ");
@@ -93,59 +93,84 @@ void GenericStation::print() {
 }
 
 int GenericStation::update(PMessage p[5]) {
-    readProtocol();
-    p[0] = readMaster();
-    /* PIPE 0 = PROTOCOL
-     * PIPE 1 = MASTER
-     * PIPE 2..5 = CHILD
-     * */
-    int t = 0;
-    for (int i = 0; i < 4; i++) {
-        if (childPipes[i] != 0x00) {
-            PMessage c = 0;
-            if(read(i + 2, c)) {
-                t++;
-                p[i + 1] = processRead(c); // CORRECT VALUES TO PIPE NUMBER
+    PMessage c = 0;
+    uint8_t pipeNumber;
+    uint8_t quantity = 0;
+    for (int i = 0; i < 6; i++) {
+        if(read(&pipeNumber, c)) {
+                /* PIPE 0 = PROTOCOL
+                 * PIPE 1 = MASTER
+                 * PIPE 2..5 = CHILD
+                 * */
+            if(pipeNumber == 0) {
+                processReadProtocol(c);
+            } else if(pipeNumber == 1) {
+                p[0] = processRead(c);
+                if(!(p[0].id_dest == 0x00 && p[0].id_from == 0x00)) {
+                    quantity++;
+                }
+            } else {
+                p[(pipeNumber - 1)] = processRead(c);
+                quantity++;
             }
-            readProtocol();
         }
     }
-    readProtocol();
-    return t;
+    return quantity;
 }
 
-
+/*
 PMessage GenericStation::readMaster() {
-    if(parentPipe != 0x00) {
+    if (parentPipe != 0x00) {
         PMessage c = 0;
         if (read((uint8_t) 1, c)) {
-            Serial.print("RECEIVED ON MASTER PIPE");
+            Serial.println("RECEIVED ON MASTER PIPE");
             return processRead(c);
         }
     }
 }
+*/
 
-bool GenericStation::read(uint8_t pipeNumber, PMessage & p) {
+/*bool GenericStation::read(uint8_t pipeNumber, PMessage & p) {
+ boolean done = false;
+ uint8_t buffer[sizeof(PMessage)];
+ if (radio.hasData(pipeNumber)) {
+ if (radio.available(&pipeNumber)) {
+ while (!done) {
+ done = radio.read(&buffer, sizeof(PMessage));
+ p = (PMessage) buffer;
+ }
+ Serial.print("RECEIVING ON PIPE");
+ Serial.println(pipeNumber);
+ p.print();
+ return true;
+ }
+ }
+ return false;
+ }*/
+
+bool GenericStation::read(uint8_t * pipeNumber, PMessage & p) {
     boolean done = false;
     uint8_t buffer[sizeof(PMessage)];
-    if (radio.available(&pipeNumber)) {
+    if (radio.available(pipeNumber)) {
         while (!done) {
             done = radio.read(&buffer, sizeof(PMessage));
             p = (PMessage) buffer;
         }
-        Serial.println("RECEIVING");
+        Serial.print("RECEIVING ON PIPE");
+        Serial.println(*pipeNumber);
         p.print();
         return true;
     }
     return false;
 }
 
-void GenericStation::readProtocol() {
+/*void GenericStation::readProtocol() {
     PMessage c = 0;
     if (read((uint8_t) 0, c)) {
+        Serial.println("READ PROTOCOL");
         processReadProtocol(c);
     }
-}
+}*/
 PMessage GenericStation::processRead(PMessage p) {
     if (!p.is_protocol()) {
         if (p.id_dest == id) {
@@ -154,11 +179,11 @@ PMessage GenericStation::processRead(PMessage p) {
         } else if (indirectChild(p.id_dest)) {
             Serial.println("FORWARDING MESSAGE");
             writePipe(findChildPipe(p.id_dest), p);
-            p = 0;
+            p = PMessage(PMessage::TUSER, PMessage::CUSER, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0);
             return p;
         }
     }
-    p = 0;
+    p = PMessage(PMessage::TUSER, PMessage::CUSER, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0);
     return p;
 }
 

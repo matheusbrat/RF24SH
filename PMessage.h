@@ -16,6 +16,8 @@
 #define SET_MSG_TYPE(I, V) I | (V << 4)
 #define GET_MSG_DEST(V) (V & 0x08) >> 3
 #define SET_MSG_DEST(I, V) I | (V << 3)
+#define GET_MSG_EXTRA(V) (V & 0x04) >> 2
+#define SET_MSG_EXTRA(I, V) I | (V << 2)
 
 class PMessage {
 public:
@@ -27,7 +29,7 @@ public:
 	~PMessage();
 	uint8_t proto, id_dest, id_from, value, value2, value3;
 
-	PMessage(TYPE _pmsg, CMD _t, uint8_t id_dest, uint8_t id_from, uint8_t _value, uint8_t _level, uint8_t _total);
+	PMessage(TYPE _pmsg, CMD _t, uint8_t id_dest, uint8_t id_from, uint8_t _value, uint8_t _value2, uint8_t _value3);
 	PMessage(uint8_t b[6]);
 	bool is_protocol();
 	int get_type();

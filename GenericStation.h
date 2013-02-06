@@ -39,7 +39,7 @@ protected:
 
 	bool writePipe(uint64_t pipe, PMessage p);
 	bool writeProtocol(PMessage p);
-	bool read(uint8_t pipeNumber, PMessage &p);
+	bool read(uint8_t * pipeNumber, PMessage &p);
 	PMessage processRead(PMessage p);
 
 public:

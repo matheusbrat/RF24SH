@@ -7,6 +7,14 @@
 
 #include "Station.h"
 
+
+int freeRam() {
+  extern int __heap_start, *__brkval;
+  int v;
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+}
+
+
 Station::Station() {
     GenericStation();
     flag = NOTHING;
@@ -20,24 +28,28 @@ Station::Station() {
     Serial.println("DISCOVER WHO IS LISTENING");
     bool askConfig = false;
     long sent_time;
+    PMessage p[5] = { 0, 0, 0, 0, 0 };
     while (!askConfig) {
         sendWhoListen();
         sent_time = millis();
         while ((millis() - sent_time) < (256 * 100)) {
-            readProtocol();
+            update(p);
         }
         askConfig = sendAskConfig();
+        update(p);
     }
 
-    while (id == 0x00) {
-        sent_time = millis();
-        while ((millis() - sent_time) < (256 * 100)) {
-            readProtocol();
-        }
-        Serial.println("Finish ASKING FOR CONFIGURATION");
-        Serial.println("SETUP START REGULAR TASK");
-        print();
+    update(p);
+    sent_time = millis();
+    update(p);
+    while (((millis() - sent_time) < (256 * 100)) && id == 0x00) {
+        update(p);
     }
+    Serial.println("Finish ASKING FOR CONFIGURATION");
+    Serial.println("SETUP START REGULAR TASK");
+    print();
+    Serial.print("FREE RAM");
+    Serial.println(freeRam());
 }
 
 void Station::sendWhoListen() {
@@ -84,7 +96,6 @@ bool Station::sendAskConfig() {
         if (idSelection[0] == 0x01) {
             c.proto = SET_MSG_DEST(c.proto, 1);
         }
-
         //}
         writeProtocol(c);
         return true;
@@ -94,8 +105,8 @@ bool Station::sendAskConfig() {
 
 void Station::receivedWhoListen(PMessage p) {
     if (id != 0) {
-        long wait = millis();
-        while ((millis() - wait) < (id * 100)) {
+        unsigned long wait = millis();
+        while ((millis() - wait) < (unsigned int) (id * 100)) {
             delay(5);
         }
         PMessage c = PMessage(PMessage::PROTOCOL, PMessage::I_LISTEN,
