@@ -16,6 +16,9 @@ protected:
 	uint8_t canTalkTo[10][5];
 	uint8_t levels[10];
 	uint8_t talkingTo[10][4];
+	uint8_t lastParent;
+	long lastAskConfig;
+
 
 public:
 	MasterStation();

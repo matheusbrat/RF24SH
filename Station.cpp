@@ -163,15 +163,16 @@ void Station::receivedAskConfig(PMessage p) {
 }
 
 void Station::receivedSetConfig(PMessage p) {
+    bool condition = (findChildPipe(p.value) == 0xFF);
     if (flag == RETRANSMIT || flag == RETRANSMIT_FIRST) {
         Serial.println("retransmit SET_CONFIG");
         flag = NOTHING;
         //p.id_dest = forward;
-        if (p.value3 == id) {
+        if (p.value3 == id && condition) {
             // I'm his parent, open new pipe;
             registerPipe(findOpenPipe(), p.value);
         }
-        if (indirectChild(p.value3)) {
+        if (indirectChild(p.value3) && condition) {
             registerIndirecChild(p.value3, p.value);
         }
         if (flag == RETRANSMIT_FIRST) {
@@ -187,12 +188,12 @@ void Station::receivedSetConfig(PMessage p) {
         level = p.value2;
         radio.openReadingPipe(1, ID_TO_PIPE(id));
     } else if (flag == NOTHING) {
-        if (p.value3 == id) {
+        if (p.value3 == id && condition) {
             Serial.println("REGISTER CHILD");
             // I'm his parent, open new pipe;
             registerPipe(findOpenPipe(), p.value);
         }
-        if (indirectChild(p.value3)) {
+        if (indirectChild(p.value3) && condition) {
             registerIndirecChild(p.value3, p.value);
         }
         print();
