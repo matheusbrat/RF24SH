@@ -18,7 +18,6 @@ GenericStation::GenericStation() :
     parentPipe = 0;
     id = 0;
     level = 0;
-
     radio.begin();
     radio.setRetries(15, 15);
     radio.setPayloadSize(sizeof(PMessage));
@@ -63,7 +62,7 @@ bool GenericStation::writePipe(uint64_t pipe, PMessage p) {
     short attempts = 5;
     boolean ok = false;
     do {
-        delay(10 - (attempts * 2));
+        delay(10 - (attempts * 2) + 1);
         ok = radio.write(&p, sizeof(PMessage));
     } while (!ok && --attempts);
     Serial.print("SENDING TO ");
@@ -93,25 +92,27 @@ void GenericStation::print() {
 }
 
 int GenericStation::update(PMessage p[5]) {
-    PMessage c = 0;
     uint8_t pipeNumber;
     uint8_t quantity = 0;
     for (int i = 0; i < 6; i++) {
-        if(read(&pipeNumber, c)) {
-                /* PIPE 0 = PROTOCOL
-                 * PIPE 1 = MASTER
-                 * PIPE 2..5 = CHILD
-                 * */
-            if(pipeNumber == 0) {
-                processReadProtocol(c);
-            } else if(pipeNumber == 1) {
+        PMessage c = 0;
+        if (read(&pipeNumber, c)) {
+            /* PIPE 0 = PROTOCOL
+             * PIPE 1 = MASTER
+             * PIPE 2..5 = CHILD
+             * */
+            if (pipeNumber == 0) {
+                    processReadProtocol(c);
+            } else if (pipeNumber == 1) {
                 p[0] = processRead(c);
-                if(!(p[0].id_dest == 0x00 && p[0].id_from == 0x00)) {
+                if (!(p[0].id_dest == 0x00 && p[0].id_from == 0x00)) {
                     quantity++;
                 }
-            } else {
+            } else if (pipeNumber < 6) {
                 p[(pipeNumber - 1)] = processRead(c);
-                quantity++;
+                if (!(p[0].id_dest == 0x00 && p[0].id_from == 0x00)) {
+                    quantity++;
+                }
             }
         }
     }
@@ -119,16 +120,16 @@ int GenericStation::update(PMessage p[5]) {
 }
 
 /*
-PMessage GenericStation::readMaster() {
-    if (parentPipe != 0x00) {
-        PMessage c = 0;
-        if (read((uint8_t) 1, c)) {
-            Serial.println("RECEIVED ON MASTER PIPE");
-            return processRead(c);
-        }
-    }
-}
-*/
+ PMessage GenericStation::readMaster() {
+ if (parentPipe != 0x00) {
+ PMessage c = 0;
+ if (read((uint8_t) 1, c)) {
+ Serial.println("RECEIVED ON MASTER PIPE");
+ return processRead(c);
+ }
+ }
+ }
+ */
 
 /*bool GenericStation::read(uint8_t pipeNumber, PMessage & p) {
  boolean done = false;
@@ -165,12 +166,12 @@ bool GenericStation::read(uint8_t * pipeNumber, PMessage & p) {
 }
 
 /*void GenericStation::readProtocol() {
-    PMessage c = 0;
-    if (read((uint8_t) 0, c)) {
-        Serial.println("READ PROTOCOL");
-        processReadProtocol(c);
-    }
-}*/
+ PMessage c = 0;
+ if (read((uint8_t) 0, c)) {
+ Serial.println("READ PROTOCOL");
+ processReadProtocol(c);
+ }
+ }*/
 PMessage GenericStation::processRead(PMessage p) {
     if (!p.is_protocol()) {
         if (p.id_dest == id) {
@@ -179,11 +180,18 @@ PMessage GenericStation::processRead(PMessage p) {
         } else if (indirectChild(p.id_dest)) {
             Serial.println("FORWARDING MESSAGE");
             writePipe(findChildPipe(p.id_dest), p);
-            p = PMessage(PMessage::TUSER, PMessage::CUSER, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0);
+            p = PMessage(PMessage::TUSER, PMessage::CUSER, (uint8_t) 0,
+                    (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0);
+            return p;
+        } else {
+            writePipe(ID_TO_PIPE(parentPipe), p);
+            p = PMessage(PMessage::TUSER, PMessage::CUSER, (uint8_t) 0,
+                                (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0);
             return p;
         }
     }
-    p = PMessage(PMessage::TUSER, PMessage::CUSER, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0);
+    p = PMessage(PMessage::TUSER, PMessage::CUSER, (uint8_t) 0, (uint8_t) 0,
+            (uint8_t) 0, (uint8_t) 0, (uint8_t) 0);
     return p;
 }
 
@@ -250,19 +258,19 @@ uint8_t GenericStation::findChildPipe(uint8_t id) {
 }
 
 void GenericStation::receivedWhoListen(PMessage p) {
-    // Class that extend this must implement!
+// Class that extend this must implement!
 }
 
 void GenericStation::receivedIListen(PMessage p) {
-    // Class that extend this must implement!
+// Class that extend this must implement!
 }
 
 void GenericStation::receivedAskConfig(PMessage p) {
-    // Class that extend this must implement!
+// Class that extend this must implement!
 }
 
 void GenericStation::receivedSetConfig(PMessage p) {
-    // Class that extend this must implement!
+// Class that extend this must implement!
 }
 
 GenericStation::~GenericStation() {

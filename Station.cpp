@@ -42,7 +42,11 @@ Station::Station() {
     update(p);
     sent_time = millis();
     update(p);
-    while (((millis() - sent_time) < (256 * 100)) && id == 0x00) {
+    while (id == 0x00) {
+        update(p);
+        update(p);
+        update(p);
+        update(p);
         update(p);
     }
     Serial.println("Finish ASKING FOR CONFIGURATION");
