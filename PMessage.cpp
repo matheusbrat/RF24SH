@@ -19,6 +19,9 @@ PMessage::PMessage(PMessage::TYPE _pmsg, PMessage::CMD _t, uint8_t _id_dest, uin
 	value3 = _value3;
 }
 
+PMessage::PMessage() {
+}
+
 PMessage::PMessage(uint8_t b[6]) {
 	proto = 0;
 	proto = b[0];

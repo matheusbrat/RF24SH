@@ -7,14 +7,6 @@
 
 #include "Station.h"
 
-
-int freeRam() {
-  extern int __heap_start, *__brkval;
-  int v;
-  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
-}
-
-
 Station::Station() {
     GenericStation();
     flag = NOTHING;
@@ -28,7 +20,7 @@ Station::Station() {
     PRINTln("DISCOVER WHO IS LISTENING");
     bool askConfig = false;
     long sent_time;
-    PMessage p[5] = { 0, 0, 0, 0, 0 };
+    PMessage p[5];
     while (!askConfig) {
         sendWhoListen();
         sent_time = millis();
@@ -52,8 +44,6 @@ Station::Station() {
     PRINTln("Finish ASKING FOR CONFIGURATION");
     PRINTln("SETUP START REGULAR TASK");
     print();
-    PRINT("FREE RAM");
-    PRINTln(freeRam());
 }
 
 void Station::sendWhoListen() {
@@ -89,7 +79,7 @@ bool Station::sendAskConfig() {
         PRINT(" ");
         PRINT(idSelection[4], HEX);
         PRINT(" ");
-        PMessage c = 0;
+        PMessage c;
         // THIS IF IS JUST FOR TESTING PURPOSE!
         /*if (idSelection[1] != 0) {
          c = PMessage(PMessage::PROTOCOL, PMessage::ASK_CONFIG, idSelection[1],

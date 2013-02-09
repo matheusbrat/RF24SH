@@ -9,7 +9,9 @@
 #define PMESSAGE_H_
 
 #include "config.h"
+#if defined(ARDUINO) || defined(__KV20DX128__)
 #include <Arduino.h>
+#endif
 
 #define GET_MSG_PROT(V) (V >> 7)
 #define SET_MSG_PROT(I, V) I | (V << 7)

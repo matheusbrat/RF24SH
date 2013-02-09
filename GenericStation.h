@@ -8,7 +8,12 @@
 #ifndef GENERICSTATION_H_
 #define GENERICSTATION_H_
 
+#if defined(ARDUINO) || defined(__KV20DX128__)
 #include "RF24.h"
+#else
+#include <RF24/RF24.h>
+#endif
+
 #include "PMessage.h"
 #include "config.h"
 

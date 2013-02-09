@@ -99,6 +99,7 @@ void MasterStation::receivedAskConfig(PMessage p) {
     PRINT(" MSG DEST ");
     PRINTln(p.proto, HEX);
     if (p.id_dest == id || GET_MSG_DEST(p.proto) == 1) {
+        PRINT((millis() - lastAskConfig));
         if ((millis() - lastAskConfig) > 2000) {
             PRINTln("ENTROU AQUI");
             canTalkTo[nextId][0] = p.id_dest;

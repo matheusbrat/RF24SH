@@ -8,7 +8,12 @@
 #include "GenericStation.h"
 
 GenericStation::GenericStation() :
-        radio(9, 10) {
+#if defined(ARDUINO) || defined(__KV20DX128__)
+        radio(9, 10) 
+#else 
+        radio("/dev/spidev0.0",8000000 , 25) 
+#endif
+{
     // FIX NUMBER FOUR MAGIC NUMBER
     for (int i = 0; i < 4; i++) {
         childPipes[i] = 0;
@@ -60,7 +65,7 @@ bool GenericStation::writePipe(uint64_t pipe, PMessage p) {
     radio.stopListening();
     radio.openWritingPipe(pipe);
     short attempts = 5;
-    boolean ok = false;
+    bool ok = false;
     do {
         delay(10 - (attempts * 2) + 1);
         ok = radio.write(&p, sizeof(PMessage));
@@ -95,7 +100,7 @@ int GenericStation::update(PMessage p[5]) {
     uint8_t pipeNumber;
     uint8_t quantity = 0;
     for (int i = 0; i < 6; i++) {
-        PMessage c = 0;
+        PMessage c;
         if (read(&pipeNumber, c)) {
             /* PIPE 0 = PROTOCOL
              * PIPE 1 = MASTER
@@ -109,8 +114,9 @@ int GenericStation::update(PMessage p[5]) {
                     quantity++;
                 }
             } else if (pipeNumber < 6) {
-                p[(pipeNumber - 1)] = processRead(c);
-                if (!(p[0].id_dest == 0x00 && p[0].id_from == 0x00)) {
+                uint8_t arrayChildNumber = (pipeNumber - 1);
+                p[arrayChildNumber] = processRead(c);
+                if (!(p[arrayChildNumber].id_dest == 0x00 && p[arrayChildNumber].id_from == 0x00)) {
                     quantity++;
                 }
             }
@@ -122,7 +128,7 @@ int GenericStation::update(PMessage p[5]) {
 /*
  PMessage GenericStation::readMaster() {
  if (parentPipe != 0x00) {
- PMessage c = 0;
+ PMessage c;
  if (read((uint8_t) 1, c)) {
  PRINTln("RECEIVED ON MASTER PIPE");
  return processRead(c);
@@ -132,7 +138,7 @@ int GenericStation::update(PMessage p[5]) {
  */
 
 /*bool GenericStation::read(uint8_t pipeNumber, PMessage & p) {
- boolean done = false;
+ bool done = false;
  uint8_t buffer[sizeof(PMessage)];
  if (radio.hasData(pipeNumber)) {
  if (radio.available(&pipeNumber)) {
@@ -150,7 +156,7 @@ int GenericStation::update(PMessage p[5]) {
  }*/
 
 bool GenericStation::read(uint8_t * pipeNumber, PMessage & p) {
-    boolean done = false;
+    bool done = false;
     uint8_t buffer[sizeof(PMessage)];
     if (radio.available(pipeNumber)) {
         while (!done) {
@@ -166,7 +172,7 @@ bool GenericStation::read(uint8_t * pipeNumber, PMessage & p) {
 }
 
 /*void GenericStation::readProtocol() {
- PMessage c = 0;
+ PMessage c;
  if (read((uint8_t) 0, c)) {
  PRINTln("READ PROTOCOL");
  processReadProtocol(c);
