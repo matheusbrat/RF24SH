@@ -2,13 +2,14 @@
  * MasterStation.h
  *
  *  Created on: Jan 30, 2013
- *      Author: x-warrior
+ *      Author: Matheus (X-warrior) Bratfisch (matheusbrat@gmail.com)
  */
 
 #ifndef MASTERSTATION_H_
 #define MASTERSTATION_H_
 
 #include "GenericStation.h"
+#include "config.h"
 
 class MasterStation: public GenericStation {
 protected:

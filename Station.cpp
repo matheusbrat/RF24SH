@@ -2,7 +2,7 @@
  * Station.cpp
  *
  *  Created on: Jan 30, 2013
- *      Author: x-warrior
+ *      Author: Matheus (X-warrior) Bratfisch (matheusbrat@gmail.com)
  */
 
 #include "Station.h"
@@ -25,7 +25,7 @@ Station::Station() {
     }
     control = 0;
 
-    Serial.println("DISCOVER WHO IS LISTENING");
+    PRINTln("DISCOVER WHO IS LISTENING");
     bool askConfig = false;
     long sent_time;
     PMessage p[5] = { 0, 0, 0, 0, 0 };
@@ -49,11 +49,11 @@ Station::Station() {
         update(p);
         update(p);
     }
-    Serial.println("Finish ASKING FOR CONFIGURATION");
-    Serial.println("SETUP START REGULAR TASK");
+    PRINTln("Finish ASKING FOR CONFIGURATION");
+    PRINTln("SETUP START REGULAR TASK");
     print();
-    Serial.print("FREE RAM");
-    Serial.println(freeRam());
+    PRINT("FREE RAM");
+    PRINTln(freeRam());
 }
 
 void Station::sendWhoListen() {
@@ -79,16 +79,16 @@ bool Station::sendAskConfig() {
         }
     }
     if (idSelection[0] != 0x00) {
-        Serial.print(idSelection[0], HEX);
-        Serial.print(" ");
-        Serial.print(idSelection[1], HEX);
-        Serial.print(" ");
-        Serial.print(idSelection[2], HEX);
-        Serial.print(" ");
-        Serial.print(idSelection[3], HEX);
-        Serial.print(" ");
-        Serial.print(idSelection[4], HEX);
-        Serial.print(" ");
+        PRINT(idSelection[0], HEX);
+        PRINT(" ");
+        PRINT(idSelection[1], HEX);
+        PRINT(" ");
+        PRINT(idSelection[2], HEX);
+        PRINT(" ");
+        PRINT(idSelection[3], HEX);
+        PRINT(" ");
+        PRINT(idSelection[4], HEX);
+        PRINT(" ");
         PMessage c = 0;
         // THIS IF IS JUST FOR TESTING PURPOSE!
         /*if (idSelection[1] != 0) {
@@ -139,8 +139,8 @@ void Station::receivedIListen(PMessage p) {
             idSelection[control] = p.id_from;
             levelSelection[control] = p.value2;
             control++;
-            Serial.print("CONTROL: ");
-            Serial.println(control);
+            PRINT("CONTROL: ");
+            PRINTln(control);
         }
     }
 }
@@ -154,7 +154,7 @@ void Station::receivedAskConfig(PMessage p) {
         if (p.id_dest == id) {
             flag = RETRANSMIT_FIRST;
         }
-        Serial.println("retransmit ASK_CONFIG");
+        PRINTln("retransmit ASK_CONFIG");
         //forward = p.id_dest;
         //p.id_dest = parentPipe;
         writeProtocol(p);
@@ -165,7 +165,7 @@ void Station::receivedAskConfig(PMessage p) {
 void Station::receivedSetConfig(PMessage p) {
     bool condition = (findChildPipe(p.value) == 0xFF);
     if (flag == RETRANSMIT || flag == RETRANSMIT_FIRST) {
-        Serial.println("retransmit SET_CONFIG");
+        PRINTln("retransmit SET_CONFIG");
         flag = NOTHING;
         //p.id_dest = forward;
         if (p.value3 == id && condition) {
@@ -181,7 +181,7 @@ void Station::receivedSetConfig(PMessage p) {
         writeProtocol(p);
         print();
     } else if (flag == WAITING && GET_MSG_DEST(p.proto) == 1) {
-        Serial.println("Received set_config");
+        PRINTln("Received set_config");
         flag = NOTHING;
         parentPipe = p.value3; //c.id_from;
         id = p.value;
@@ -189,7 +189,7 @@ void Station::receivedSetConfig(PMessage p) {
         radio.openReadingPipe(1, ID_TO_PIPE(id));
     } else if (flag == NOTHING) {
         if (p.value3 == id && condition) {
-            Serial.println("REGISTER CHILD");
+            PRINTln("REGISTER CHILD");
             // I'm his parent, open new pipe;
             registerPipe(findOpenPipe(), p.value);
         }

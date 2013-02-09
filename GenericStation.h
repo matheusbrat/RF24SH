@@ -2,7 +2,7 @@
  * GenericStation.h
  *
  *  Created on: Jan 30, 2013
- *      Author: x-warrior
+ *      Author: Matheus (X-warrior) Bratfisch (matheusbrat@gmail.com)
  */
 
 #ifndef GENERICSTATION_H_
@@ -10,6 +10,7 @@
 
 #include "RF24.h"
 #include "PMessage.h"
+#include "config.h"
 
 #define PROTO_PIPE 0x7878787878LL
 #define PROTO_PIPE_PREFIX 0x00ABABABABLL

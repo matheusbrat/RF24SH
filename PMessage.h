@@ -2,12 +2,13 @@
  * PMessage.h
  *
  *  Created on: Jan 28, 2013
- *      Author: x-warrior
+ *      Author: Matheus (X-warrior) Bratfisch (matheusbrat@gmail.com)
  */
 
 #ifndef PMESSAGE_H_
 #define PMESSAGE_H_
 
+#include "config.h"
 #include <Arduino.h>
 
 #define GET_MSG_PROT(V) (V >> 7)

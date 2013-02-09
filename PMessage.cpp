@@ -2,7 +2,7 @@
  * PMessage.h
  *
  *  Created on: Jan 28, 2013
- *      Author: x-warrior
+ *      Author: Matheus (X-warrior) Bratfisch (matheusbrat@gmail.com)
  */
 
 #include "PMessage.h"
@@ -40,20 +40,20 @@ int PMessage::get_type() {
 }
 
 void PMessage::print() {
-	Serial.print("TYPE ");
-	Serial.println(get_type(), HEX);
-	Serial.print("CMD ");
-	Serial.println(is_protocol(), HEX);
-	Serial.print("DEST ");
-	Serial.println(id_dest, HEX);	
-	Serial.print("FROM ");
-	Serial.println(id_from, HEX);	
-	Serial.print("VALUE ");
-	Serial.println(value, HEX);	
-	Serial.print("VALUE2 ");
-	Serial.println(value2, HEX);	
-	Serial.print("VALUE3 ");
-	Serial.println(value3, HEX);	
+	PRINT("TYPE ");
+	PRINTln(get_type(), HEX);
+	PRINT("CMD ");
+	PRINTln(is_protocol(), HEX);
+	PRINT("DEST ");
+	PRINTln(id_dest, HEX);
+	PRINT("FROM ");
+	PRINTln(id_from, HEX);
+	PRINT("VALUE ");
+	PRINTln(value, HEX);
+	PRINT("VALUE2 ");
+	PRINTln(value2, HEX);
+	PRINT("VALUE3 ");
+	PRINTln(value3, HEX);
 }
 
 

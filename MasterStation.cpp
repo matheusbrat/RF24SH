@@ -2,7 +2,7 @@
  * MasterStation.cpp
  *
  *  Created on: Jan 30, 2013
- *      Author: x-warrior
+ *      Author: Matheus (X-warrior) Bratfisch (matheusbrat@gmail.com)
  */
 
 #include "MasterStation.h"
@@ -75,7 +75,7 @@ void MasterStation::receivedWhoListen(PMessage p) {
     PMessage c = PMessage(PMessage::PROTOCOL, PMessage::I_LISTEN,
             (uint8_t) 0x00, (uint8_t) id, 0x00, (uint8_t) level,
             (uint8_t) 0x00);
-    Serial.println("sending I_LISTEN");
+    PRINTln("sending I_LISTEN");
     writeProtocol(c);
 }
 
@@ -92,21 +92,21 @@ void MasterStation::testMessage() {
 }
 
 void MasterStation::receivedAskConfig(PMessage p) {
-    Serial.print("MY ID: ");
-    Serial.print(id);
-    Serial.print(" DEST ID ");
-    Serial.print(p.id_dest);
-    Serial.print(" MSG DEST ");
-    Serial.println(p.proto, HEX);
+    PRINT("MY ID: ");
+    PRINT(id);
+    PRINT(" DEST ID ");
+    PRINT(p.id_dest);
+    PRINT(" MSG DEST ");
+    PRINTln(p.proto, HEX);
     if (p.id_dest == id || GET_MSG_DEST(p.proto) == 1) {
         if ((millis() - lastAskConfig) > 2000) {
-            Serial.println("ENTROU AQUI");
+            PRINTln("ENTROU AQUI");
             canTalkTo[nextId][0] = p.id_dest;
             canTalkTo[nextId][1] = p.id_from;
             canTalkTo[nextId][2] = p.value;
             canTalkTo[nextId][3] = p.value2;
             canTalkTo[nextId][4] = p.value3;
-            Serial.println("sending set_config");
+            PRINTln("sending set_config");
             uint8_t parent = getParent(p);
         lastParent = parent;
             PMessage r = PMessage(PMessage::PROTOCOL, PMessage::SET_CONFIG,

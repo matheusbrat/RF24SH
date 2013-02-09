@@ -2,13 +2,14 @@
  * Station.h
  *
  *  Created on: Jan 30, 2013
- *      Author: x-warrior
+ *      Author: Matheus (X-warrior) Bratfisch (matheusbrat@gmail.com)
  */
 
 #ifndef STATION_H_
 #define STATION_H_
 
 #include "GenericStation.h"
+#include "config.h"
 
 class Station: public GenericStation {
 protected:
