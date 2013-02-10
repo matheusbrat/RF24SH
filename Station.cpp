@@ -27,19 +27,24 @@ Station::Station() {
         while ((millis() - sent_time) < (256 * 100)) {
             update(p);
         }
-        askConfig = sendAskConfig();
+        askConfig = sendAskConfig(false);
         update(p);
     }
 
     update(p);
+    update(p);
     sent_time = millis();
     update(p);
+    update(p);
     while (id == 0x00) {
-        update(p);
-        update(p);
-        update(p);
-        update(p);
-        update(p);
+        sendAskConfig(true);
+        for(int i = 0; i < 50; i++) {
+            update(p);
+            update(p);
+            update(p);
+            update(p);
+            update(p);
+        }
     }
     PRINTln("Finish ASKING FOR CONFIGURATION");
     PRINTln("SETUP START REGULAR TASK");
@@ -52,7 +57,7 @@ void Station::sendWhoListen() {
     writeProtocol(c);
 }
 
-bool Station::sendAskConfig() {
+bool Station::sendAskConfig(bool resend) {
     uint8_t temp = 0;
     uint8_t tempId = 0;
     flag = WAITING;
@@ -89,6 +94,9 @@ bool Station::sendAskConfig() {
                 idSelection[1], idSelection[2], idSelection[3], idSelection[4]);
         if (idSelection[0] == 0x01) {
             c.proto = SET_MSG_DEST(c.proto, 1);
+        }
+        if(resend) {
+            c.proto = SET_MSG_EXTRA(c.proto, 1);
         }
         //}
         writeProtocol(c);

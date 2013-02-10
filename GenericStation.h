@@ -8,8 +8,8 @@
 #ifndef GENERICSTATION_H_
 #define GENERICSTATION_H_
 
-#if defined(ARDUINO) || defined(__KV20DX128__)
-#include "RF24.h"
+#if defined(__KV20DX128__) || defined(ARDUINO)
+#include "../RF24/RF24.h"
 #else
 #include <RF24/RF24.h>
 #endif

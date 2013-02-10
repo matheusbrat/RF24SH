@@ -24,7 +24,7 @@ protected:
 	uint8_t control;
 
 	void sendWhoListen();
-	bool sendAskConfig();
+	bool sendAskConfig(bool resend);
 
 	void receivedWhoListen(PMessage p);
 	void receivedIListen(PMessage p);

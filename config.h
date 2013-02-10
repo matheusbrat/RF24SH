@@ -75,7 +75,7 @@ void static println_func(uint8_t str, int t) {
 	if(t == HEX)
 		cout << hex << v << endl;
 	else
-	        cout << dec << v << endl;
+	    cout << dec << v << endl;
 }
 
 #endif
