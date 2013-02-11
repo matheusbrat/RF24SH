@@ -8,10 +8,12 @@
 #ifndef GENERICSTATION_H_
 #define GENERICSTATION_H_
 
-#if defined(__KV20DX128__) || defined(ARDUINO)
-#include "../RF24/RF24.h"
+#if defined(__MK20DX128__)
+#include "librf24/teensy/RF24.h"
+#elif !defined(__MK20DX128__) && defined(ARDUINO)
+#include "librf24/arduino/RF24.h"
 #else
-#include <RF24/RF24.h>
+#include "librf24/rpi/RF24.h"
 #endif
 
 #include "PMessage.h"
