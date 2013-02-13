@@ -8,7 +8,7 @@
 #include "GenericStation.h"
 
 GenericStation::GenericStation() :
-#if defined(ARDUINO) || defined(__KV20DX128__)
+#if defined(ARDUINO) || defined(__MK20DX128__)
         radio(9, 10) 
 #else 
         radio("/dev/spidev0.0",8000000 , 25) 

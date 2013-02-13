@@ -10,6 +10,10 @@
 #include "RF24_config.h"
 #include "RF24.h"
 
+RF24::~RF24() {
+    // TODO Auto-generated destructor stub
+}
+
 /****************************************************************************/
 
 void RF24::csn(int mode)

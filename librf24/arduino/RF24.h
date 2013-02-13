@@ -56,6 +56,8 @@ private:
   uint64_t pipe0_reading_address; /**< Last address set on pipe 0 for reading. */
 
 protected:
+  virtual ~RF24();
+
   /**
    * @name Low-level internal interface.
    *
