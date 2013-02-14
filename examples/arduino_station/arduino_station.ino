@@ -5,7 +5,7 @@
 #include <config.h>
 #include "printf.h"
 
-GenericStation * p;
+Station * p;
 
 PMessage d[5] = {0, 0, 0, 0, 0};
 bool details = false;
@@ -15,6 +15,7 @@ void setup() {
   SERIALBEGIN(57600);
   printf_begin();
   p = new Station();
+  p->begin();
 }
 
 void loop() {

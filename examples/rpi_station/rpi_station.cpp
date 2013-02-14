@@ -1,12 +1,12 @@
 #include "../../PMessage.h"
+#include "../../Station.h"
 #include "../../GenericStation.h"
-#include "../../MasterStation.h"
 
 #include <iostream>
 
 using namespace std;
 
-MasterStation * p;
+Station * p;
 
 PMessage d[5];
 bool details = false;
@@ -16,17 +16,16 @@ void loop();
 
 int main(int argc, char **argv) {
 	__start_timer();
-	p = new MasterStation();
+	p = new Station();
+	p->begin();
 	loop();
 }
 
 void loop() {
 	while(1) {
-                if((millis() - control) > 5000) {
-                        control = millis();
-                        p->testMessage();
-                }
-                p->update(d);
+	    if(p->update(d) > 0) {
+	      d[0].print();
+	    }
 	}
 }
 

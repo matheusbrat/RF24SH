@@ -5,9 +5,8 @@
 #include <config.h>
 #include "printf.h"
 
-#define MASTER
+MasterStation * p;
 
-GenericStation * p;
 PMessage d[5] = {0, 0, 0, 0, 0};
 bool details = false;
 long control = millis();
@@ -21,7 +20,7 @@ void setup() {
 
 void loop() {
   if(millis() - control > 1000) {
-    ((MasterStation*) p)->testMessage();
+    p->testMessage();
     control = millis();
   }
   p->update(d);

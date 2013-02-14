@@ -33,6 +33,7 @@ protected:
 
 public:
 	Station();
+	void begin();
 	virtual ~Station();
 };
 

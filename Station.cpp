@@ -16,7 +16,9 @@ Station::Station() {
         levelSelection[i] = 0;
     }
     control = 0;
+}
 
+void Station::begin() {
     PRINTln("DISCOVER WHO IS LISTENING");
     bool askConfig = false;
     long sent_time;

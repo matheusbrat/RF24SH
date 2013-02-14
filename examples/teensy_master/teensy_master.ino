@@ -3,10 +3,9 @@
 #include <GenericStation.h>
 #include <MasterStation.h>
 
-#define MASTER
 
+MasterStation * p;
 
-GenericStation * p;
 PMessage d[5] = {0, 0, 0, 0, 0};
 bool details = false;
 long control = millis();
@@ -18,7 +17,7 @@ void setup() {
 
 void loop() {
   if(millis() - control > 2000) {
-    ((MasterStation*) p)->testMessage();
+    p->testMessage();
     control = millis();
   }
   p->update(d);
