@@ -8,8 +8,12 @@
 #ifndef GENERICSTATION_H_
 #define GENERICSTATION_H_
 
-#include "SPI.h"
+//#include "SPI.h"
+#if defined(__MK20DX128__) || defined(ARDUINO)
 #include "utility/RF24.h"
+#else
+#include "librf24/rpi/RF24.h"
+#endif
 /*#if defined(__MK20DX128__)
 #include "librf24/teensy/RF24.h"
 #elif !defined(__MK20DX128__) && defined(ARDUINO)
