@@ -12,7 +12,7 @@ Dependencies:
 * RF24 Library (RPi)	 - librf24/rpi/ - https://github.com/gnulnulf/RF24
 
 How this library works:
-The NRF24L01+ module can listen up to 6 channels. First channel can be 0x7878787878 for example all other stations must be in the same range for example 0xABABABABYY. More information about this you can get on NRF24L01+ datasheet. Channels:
+The NRF24L01+ module can listen up to 6 channels. First channel can be 0x7878787878 for example all other channels must be in the same range for example 0xABABABABYY. More information about this you can get on NRF24L01+ datasheet. Channels:
 * Channel 0 is for protocol communication
 * Channel 1 is for parent communication
 * Channel 2-5 is for child communication
@@ -39,4 +39,4 @@ About:
 * This library is being developed by Matheus (X-warrior) Bratfisch (matheusbrat@gmail.com)
 * Feel free to contact me with suggestions, questions and others (I will do my best to help)
 * http://www.matbra.com
-
+* http://www.matbra.com/en/code/rf24sh-internet-das-coisas/
