@@ -8,11 +8,19 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+//#define PDEBUG
+
 #if defined(ARDUINO) || defined(__KV20DX128__)
 
+#if defined(PDEBUG)
 #define SERIALBEGIN(V) Serial.begin(V);
 #define PRINT(V, ...) Serial.print(V, ##__VA_ARGS__)
 #define PRINTln(V, ...) Serial.println(V, ##__VA_ARGS__)
+#else
+#define SERIALBEGIN(V)
+#define PRINT(V, ...)
+#define PRINTln(V, ...)
+#endif
 
 #else
 
@@ -29,11 +37,11 @@ using namespace std;
 #define millis __millis
 #define delay(milisec) __msleep(milisec)
 #define delayMicroseconds(usec) __usleep(usec)
+
+#ifdef PDEBUG
 #define SERIALBEGIN(V)
 #define PRINT(V, ...) print_func(V, ##__VA_ARGS__)
 #define PRINTln(V, ...) println_func(V, ##__VA_ARGS__)
-
-
 
 void static print_func(char * str) {
 	cout << str;
@@ -77,6 +85,12 @@ void static println_func(uint8_t str, int t) {
 	else
 	    cout << dec << v << endl;
 }
+#else
+#define SERIALBEGIN(V)
+#define PRINT(V, ...)
+#define PRINTln(V, ...)
+#endif
+
 
 #endif
 
