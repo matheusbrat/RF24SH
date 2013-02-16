@@ -8,7 +8,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-//#define PDEBUG
+#define PDEBUG
 
 #if defined(ARDUINO) || defined(__KV20DX128__)
 

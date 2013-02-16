@@ -29,6 +29,8 @@
 #define PROTO_PIPE_PREFIX 0x00ABABABABLL
 #define ID_TO_PIPE(P) (uint64_t) ((PROTO_PIPE_PREFIX << 8) | P)
 
+extern void * station_irq_handler;
+
 class GenericStation {
 protected:
 	uint8_t childPipes[4];
@@ -55,6 +57,7 @@ protected:
 	bool writeProtocol(PMessage p);
 	bool read(uint8_t * pipeNumber, PMessage &p);
 	PMessage processRead(PMessage p);
+	void readInterrupt();
 
 public:
     RF24 radio; // CS, CE PINS
@@ -63,6 +66,7 @@ public:
 	GenericStation();
 	int update(PMessage p[5]);
 	PMessage readMaster();
+    static void readInterruptWrapper() { ((GenericStation*) station_irq_handler)->readInterrupt(); };
 
 
 	virtual ~GenericStation();

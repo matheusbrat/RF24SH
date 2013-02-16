@@ -7,6 +7,8 @@
 
 #include "GenericStation.h"
 
+void * station_irq_handler;
+
 GenericStation::GenericStation() :
 #if defined(ARDUINO) || defined(__MK20DX128__)
         radio(9, 10) 
@@ -28,8 +30,13 @@ GenericStation::GenericStation() :
     radio.setPayloadSize(sizeof(PMessage));
     radio.openReadingPipe(0, PROTO_PIPE);
     radio.startListening();
+    station_irq_handler = this;
+    // CREATE CONSTRUCTOR WITH AND WITHOUT INTERRUPT!
+    //radio.set_irq_rx(readInterruptWrapper);
 }
-
+void GenericStation::readInterrupt() {
+    Serial.println("INTERRUPT");
+}
 uint8_t GenericStation::findOpenPipe() {
     //TODO: CHECK!
     for (uint8_t i = 0; i < 4; i++) {
