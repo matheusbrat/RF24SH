@@ -10,8 +10,6 @@
 #include "RF24_config.h"
 #include "RF24.h"
 
-void * rf24_irq_handler;
-
 RF24::~RF24() {
     // TODO Auto-generated destructor stub
 }
@@ -244,32 +242,14 @@ void RF24::print_address_register(const char* name, uint8_t reg, uint8_t qty)
 
 
 /****************************************************************************/
-void RF24::set_irq_rx(void (*_irq_rx)()) {
-    irq_rx = _irq_rx;
-}
-void RF24::set_irq_tx(void (*_irq_tx)()) {
-    irq_tx = _irq_tx;
-}
-void RF24::set_irq_max(void (*_irq_max)()) {
-    irq_max = _irq_max;
-}
-
 
 RF24::RF24(uint8_t _cepin, uint8_t _cspin):
-  ce_pin(_cepin), csn_pin(_cspin), irq_pin(0xFF),  wide_band(true), p_variant(false),
+  ce_pin(_cepin), csn_pin(_cspin), wide_band(true), p_variant(false),
   payload_size(32), ack_payload_available(false), dynamic_payloads_enabled(false),
-  pipe0_reading_address(0), irq_rx(0), irq_tx(0), irq_max(0)
+  pipe0_reading_address(0)
 {
-    rf24_irq_handler = this;
 }
 
-RF24::RF24(uint8_t _cepin, uint8_t _cspin, uint8_t _irq_pin):
-  ce_pin(_cepin), csn_pin(_cspin), irq_pin(_irq_pin), wide_band(true), p_variant(false),
-  payload_size(32), ack_payload_available(false), dynamic_payloads_enabled(false),
-  pipe0_reading_address(0), irq_rx(0), irq_tx(0), irq_max(0)
-{
-    rf24_irq_handler = this;
-}
 
 /****************************************************************************/
 
@@ -356,19 +336,6 @@ void RF24::printDetails(void)
 
 /****************************************************************************/
 
-void RF24::interrupt() {
-    uint8_t status = get_status();
-    if((status & _BV(RX_DR)) && irq_rx) {
-        irq_rx();
-    } else if ((status & _BV(TX_DS)) && irq_tx) {
-        irq_tx();
-    } else if ((status & _BV(MAX_RT)) && irq_max) {
-        irq_max();
-    }
-}
-
-/****************************************************************************/
-
 void RF24::begin(void)
 {
   // Initialize pins
@@ -424,9 +391,6 @@ void RF24::begin(void)
   // This channel should be universally safe and not bleed over into adjacent
   // spectrum.
   setChannel(76);
-
-  if(irq_pin != 0xFF)
-      attachInterrupt(irq_pin, interrupt_wrapper, FALLING);
 
   // Flush buffers
   flush_rx();

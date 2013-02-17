@@ -42,17 +42,11 @@ typedef enum { RF24_CRC_DISABLED = 0, RF24_CRC_8, RF24_CRC_16 } rf24_crclength_e
  * Driver for nRF24L01(+) 2.4GHz Wireless Transceiver
  */
 
-extern void * rf24_irq_handler;
 class RF24
 {
 private:
   uint8_t ce_pin; /**< "Chip Enable" pin, activates the RX or TX role */
   uint8_t csn_pin; /**< SPI Chip select */
-  uint8_t irq_pin;
-  void (*irq_rx) (void);
-  void (*irq_tx) (void);
-  void (*irq_max) (void);
-  static void interrupt_wrapper() { ((RF24*) rf24_irq_handler)->interrupt(); };
 
   bool wide_band; /* 2Mbs data rate in use? */
   bool p_variant; /* False for RF24L01 and true for RF24L01P */
@@ -244,11 +238,6 @@ public:
    */
   virtual ~RF24();
   RF24(uint8_t _cepin, uint8_t _cspin);
-  RF24(uint8_t _cepin, uint8_t _cspin, uint8_t _irq_pin);
-  void set_irq_rx(void (*_irq_rx)());
-  void set_irq_tx(void (*_irq_tx)());
-  void set_irq_max(void (*_irq_max)());
-  void interrupt();
 
   /**
    * Begin operation of the chip
