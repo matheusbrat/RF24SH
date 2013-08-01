@@ -5,7 +5,7 @@
 #include <config.h>
 #include "printf.h"
 
-Station * p;
+Station<PMessage> * p;
 
 PMessage d[5] = {0, 0, 0, 0, 0};
 bool details = false;
@@ -14,7 +14,8 @@ long control = millis();
 void setup() {
   SERIALBEGIN(57600);
   printf_begin();
-  p = new Station(sizeof(PMessage));
+  uint8_t a = sizeof(PMessage);
+  p = new Station<PMessage>(a);
   p->begin();
 }
 
