@@ -10,7 +10,7 @@ long control = millis();
 
 void setup() {
   Serial.begin(57600);
-  p = new Station();
+  p = new Station(sizeof(PMessage));
   p->begin();
 }
 

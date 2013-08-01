@@ -16,7 +16,7 @@ void loop();
 
 int main(int argc, char **argv) {
 	__start_timer();
-	p = new MasterStation();
+	p = new MasterStation(sizeof(PMessage));
 	loop();
 }
 

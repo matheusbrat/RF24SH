@@ -37,6 +37,7 @@ protected:
 	uint8_t childNodesSize[4];
 	uint8_t id;
 	uint8_t level;
+	uint8_t payload_size;
 
 	void print();
 	bool indirectChild(uint8_t id);
@@ -53,14 +54,14 @@ protected:
 
 	bool writePipe(uint64_t pipe, PMessage p);
 	bool writeProtocol(PMessage p);
-	bool read(uint8_t * pipeNumber, PMessage &p);
 	PMessage processRead(PMessage p);
 
 public:
+	bool read(uint8_t * pipeNumber, PMessage &p);
     RF24 radio; // CS, CE PINS
 	void readProtocol();
 	bool writePipe(uint8_t pipeNumber, PMessage p);
-	GenericStation();
+	GenericStation(uint8_t _payload_size);
 	int update(PMessage p[5]);
 	PMessage readMaster();
 

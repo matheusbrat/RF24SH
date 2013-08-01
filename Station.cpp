@@ -7,8 +7,7 @@
 
 #include "Station.h"
 
-Station::Station() {
-    GenericStation();
+Station::Station(uint8_t _payload_size) : GenericStation(_payload_size) {
     flag = NOTHING;
     forward = 0;
     for (int i = 0; i < 5; i++) {

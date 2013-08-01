@@ -22,7 +22,7 @@ protected:
 
 
 public:
-	MasterStation();
+	MasterStation(uint8_t _payload_size);
 	virtual ~MasterStation();
 
 	void receivedWhoListen(PMessage p);

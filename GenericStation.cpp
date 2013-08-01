@@ -7,7 +7,7 @@
 
 #include "GenericStation.h"
 
-GenericStation::GenericStation() :
+GenericStation::GenericStation(uint8_t _payload_size) :
 #if defined(ARDUINO) || defined(__MK20DX128__)
         radio(9, 10) 
 #else 
@@ -20,12 +20,13 @@ GenericStation::GenericStation() :
         childNodes[i] = 0;
         childNodesSize[i] = 0;
     }
+    payload_size = _payload_size;
     parentPipe = 0;
     id = 0;
     level = 0;
     radio.begin();
     radio.setRetries(15, 15);
-    radio.setPayloadSize(sizeof(PMessage));
+    radio.setPayloadSize(payload_size);
     radio.openReadingPipe(0, PROTO_PIPE);
     radio.startListening();
 }
@@ -67,7 +68,7 @@ bool GenericStation::writePipe(uint64_t pipe, PMessage p) {
     bool ok = false;
     do {
         delay(10 - (attempts * 2) + 1);
-        ok = radio.write(&p, sizeof(PMessage));
+        ok = radio.write(&p, payload_size);
     } while (!ok && --attempts);
     PRINT("SENDING TO ");
     PRINT((uint32_t) pipe, HEX);
@@ -156,10 +157,10 @@ int GenericStation::update(PMessage p[5]) {
 
 bool GenericStation::read(uint8_t * pipeNumber, PMessage & p) {
     bool done = false;
-    uint8_t buffer[sizeof(PMessage)];
+    uint8_t buffer[payload_size];
     if (radio.available(pipeNumber)) {
         while (!done) {
-            done = radio.read(&buffer, sizeof(PMessage));
+            done = radio.read(&buffer, payload_size);
             p = (PMessage) buffer;
         }
         PRINT("RECEIVING ON PIPE");

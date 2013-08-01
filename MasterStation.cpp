@@ -7,8 +7,7 @@
 
 #include "MasterStation.h"
 
-MasterStation::MasterStation() {
-    GenericStation();
+MasterStation::MasterStation(uint8_t _payload_size) : GenericStation(_payload_size) {
     for (int i = 0; i < 10; i++) {
         levels[i] = 0xFF;
         for (int x = 0; x < 5; x++) {

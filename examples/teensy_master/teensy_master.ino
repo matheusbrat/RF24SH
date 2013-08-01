@@ -12,7 +12,7 @@ long control = millis();
 
 void setup() {
   Serial.begin(57600);
-  p = new MasterStation();
+  p = new MasterStation(sizeof(PMessage));
 }
 
 void loop() {
