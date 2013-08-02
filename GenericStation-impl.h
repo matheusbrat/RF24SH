@@ -7,27 +7,26 @@
  */
 
 template <class MESSAGE_TYPE>
-GenericStation<MESSAGE_TYPE>::GenericStation(uint8_t _payload_size) :
+GenericStation<MESSAGE_TYPE>::GenericStation() :
 #if defined(ARDUINO) || defined(__MK20DX128__)
         radio(9, 10)
 #else
         radio("/dev/spidev0.0",8000000 , 25)
 #endif
 {
-
+    (void)static_cast<PMessage*>((MESSAGE_TYPE*)0);
     // FIX NUMBER FOUR MAGIC NUMBER
     for (int i = 0; i < 4; i++) {
         childPipes[i] = 0;
         childNodes[i] = 0;
         childNodesSize[i] = 0;
     }
-    payload_size = _payload_size;
     parentPipe = 0;
     id = 0;
     level = 0;
     radio.begin();
     radio.setRetries(15, 15);
-    radio.setPayloadSize(payload_size);
+    radio.setPayloadSize(sizeof(MESSAGE_TYPE));
     radio.openReadingPipe(0, PROTO_PIPE);
     radio.startListening();
 }
@@ -72,7 +71,7 @@ bool GenericStation<MESSAGE_TYPE>::writePipe(uint64_t pipe, MESSAGE_TYPE p) {
     bool ok = false;
     do {
         delay(10 - (attempts * 2) + 1);
-        ok = radio.write(&p, payload_size);
+        ok = radio.write(&p, sizeof(MESSAGE_TYPE));
     } while (!ok && --attempts);
     PRINT("SENDING TO ");
     PRINT((uint32_t) pipe, HEX);
@@ -162,10 +161,10 @@ int GenericStation<MESSAGE_TYPE>::update(MESSAGE_TYPE p[5]) {
 template <class MESSAGE_TYPE>
 bool GenericStation<MESSAGE_TYPE>::read(uint8_t * pipeNumber, MESSAGE_TYPE & p) {
     bool done = false;
-    uint8_t buffer[payload_size];
+    uint8_t buffer[sizeof(MESSAGE_TYPE)];
     if (radio.available(pipeNumber)) {
         while (!done) {
-            done = radio.read(&buffer, payload_size);
+            done = radio.read(&buffer, sizeof(MESSAGE_TYPE));
             p = (MESSAGE_TYPE) buffer;
         }
         PRINT("RECEIVING ON PIPE");

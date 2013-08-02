@@ -14,7 +14,7 @@ long control = millis();
 void setup() {
   SERIALBEGIN(57600);
   printf_begin();
-  p = new MasterStation<PMessage>(sizeof(PMessage));
+  p = new MasterStation<PMessage>();
 }
 
 

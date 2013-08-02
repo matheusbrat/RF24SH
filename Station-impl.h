@@ -6,7 +6,8 @@
  */
 
 template <class MESSAGE_TYPE>
-Station<MESSAGE_TYPE>::Station(uint8_t _payload_size) : GenericStation<MESSAGE_TYPE>(_payload_size) {
+Station<MESSAGE_TYPE>::Station() : GenericStation<MESSAGE_TYPE>() {
+    (void)static_cast<PMessage*>((MESSAGE_TYPE*)0);
     flag = NOTHING;
     forward = 0;
     for (int i = 0; i < 5; i++) {

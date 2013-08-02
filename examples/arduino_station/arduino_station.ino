@@ -14,8 +14,7 @@ long control = millis();
 void setup() {
   SERIALBEGIN(57600);
   printf_begin();
-  uint8_t a = sizeof(PMessage);
-  p = new Station<PMessage>(a);
+  p = new Station<PMessage>();
   p->begin();
 }
 

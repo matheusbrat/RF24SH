@@ -6,7 +6,8 @@
  */
 
 template <class MESSAGE_TYPE>
-MasterStation<MESSAGE_TYPE>::MasterStation(uint8_t _payload_size) : GenericStation<MESSAGE_TYPE>(_payload_size) {
+MasterStation<MESSAGE_TYPE>::MasterStation() : GenericStation<MESSAGE_TYPE>() {
+    (void)static_cast<PMessage*>((MESSAGE_TYPE*)0);
     for (int i = 0; i < 10; i++) {
         levels[i] = 0xFF;
         for (int x = 0; x < 5; x++) {

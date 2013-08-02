@@ -33,7 +33,7 @@ protected:
 	void receivedSetConfig(MESSAGE_TYPE p);
 
 public:
-	Station(uint8_t _payload_size);
+	Station();
 	void begin();
 	virtual ~Station();
 };
