@@ -63,6 +63,10 @@ bool GenericStation<MESSAGE_TYPE>::writePipe(uint8_t pipeNumber, MESSAGE_TYPE p)
     return false;
 }
 template <class MESSAGE_TYPE>
+bool GenericStation<MESSAGE_TYPE>::write(MESSAGE_TYPE p) {
+	// Class that extend this must implement!
+}
+template <class MESSAGE_TYPE>
 bool GenericStation<MESSAGE_TYPE>::writePipe(uint64_t pipe, MESSAGE_TYPE p) {
     delay(5);
     radio.stopListening();
@@ -101,32 +105,7 @@ void GenericStation<MESSAGE_TYPE>::print() {
 }
 template <class MESSAGE_TYPE>
 int GenericStation<MESSAGE_TYPE>::update(MESSAGE_TYPE p[5]) {
-    uint8_t pipeNumber;
-    uint8_t quantity = 0;
-    for (int i = 0; i < 6; i++) {
-    	MESSAGE_TYPE c;
-        if (read(&pipeNumber, c)) {
-            /* PIPE 0 = PROTOCOL
-             * PIPE 1 = MASTER
-             * PIPE 2..5 = CHILD
-             * */
-            if (pipeNumber == 0) {
-                    processReadProtocol(c);
-            } else if (pipeNumber == 1) {
-                p[0] = processRead(c);
-                if (!(p[0].id_dest == 0x00 && p[0].id_from == 0x00)) {
-                    quantity++;
-                }
-            } else if (pipeNumber < 6) {
-                uint8_t arrayChildNumber = (pipeNumber - 1);
-                p[arrayChildNumber] = processRead(c);
-                if (!(p[arrayChildNumber].id_dest == 0x00 && p[arrayChildNumber].id_from == 0x00)) {
-                    quantity++;
-                }
-            }
-        }
-    }
-    return quantity;
+    return 0;
 }
 
 /*
@@ -195,7 +174,7 @@ MESSAGE_TYPE GenericStation<MESSAGE_TYPE>::processRead(MESSAGE_TYPE p) {
                     (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0);
             return p;
         } else {
-            writePipe(ID_TO_PIPE(parentPipe), p);
+            writePipe(ID_TO_PIPE(this->id), p);
             p = MESSAGE_TYPE(MESSAGE_TYPE::TUSER, MESSAGE_TYPE::CUSER, (uint8_t) 0,
                                 (uint8_t) 0, (uint8_t) 0, (uint8_t) 0, (uint8_t) 0);
             return p;

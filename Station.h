@@ -35,6 +35,8 @@ protected:
 public:
 	Station();
 	void begin();
+	bool write(MESSAGE_TYPE msg);
+	int update(MESSAGE_TYPE p[5]);
 	virtual ~Station();
 };
 

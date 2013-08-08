@@ -34,10 +34,8 @@ template <class MESSAGE_TYPE>
 class GenericStation {
 protected:
 	uint8_t childPipes[4];
-	uint8_t parentPipe;
 	uint8_t * childNodes[4];
 	uint8_t childNodesSize[4];
-	uint8_t id;
 	uint8_t level;
 
 	void print();
@@ -65,6 +63,10 @@ public:
 	GenericStation();
 	int update(MESSAGE_TYPE p[5]);
 	MESSAGE_TYPE readMaster();
+	bool write(MESSAGE_TYPE p);
+	uint8_t id;
+	uint8_t parentPipe;
+
 
 	virtual ~GenericStation();
 };

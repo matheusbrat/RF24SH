@@ -15,7 +15,7 @@ Message::Message(uint8_t b[6]) {
 	value = b[3];
 	value2 = b[4];
 	value3 = b[5];
-        extra = b[6];
+    extra = b[6];
 }
 void Message::print() {
   PMessage::print();

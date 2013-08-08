@@ -59,6 +59,35 @@ void Station<MESSAGE_TYPE>::sendWhoListen() {
     writeProtocol(c);
 }
 template <class MESSAGE_TYPE>
+int Station<MESSAGE_TYPE>::update(MESSAGE_TYPE p[5]) {
+    uint8_t pipeNumber;
+    uint8_t quantity = 0;
+    for (int i = 0; i < 6; i++) {
+    	MESSAGE_TYPE c;
+        if (read(&pipeNumber, c)) {
+            /* PIPE 0 = PROTOCOL
+             * PIPE 1 = MASTER
+             * PIPE 2..5 = CHILD
+             * */
+            if (pipeNumber == 0) {
+                    processReadProtocol(c);
+            } else if (pipeNumber == 1) {
+                p[0] = processRead(c);
+                if (!(p[0].id_dest == 0x00 && p[0].id_from == 0x00)) {
+                    quantity++;
+                }
+            } else if (pipeNumber < 6) {
+                uint8_t arrayChildNumber = (pipeNumber - 1);
+                p[arrayChildNumber] = processRead(c);
+                if (!(p[arrayChildNumber].id_dest == 0x00 && p[arrayChildNumber].id_from == 0x00)) {
+                    quantity++;
+                }
+            }
+        }
+    }
+    return quantity;
+}
+template <class MESSAGE_TYPE>
 bool Station<MESSAGE_TYPE>::sendAskConfig(bool resend) {
     uint8_t temp = 0;
     uint8_t tempId = 0;
@@ -203,4 +232,20 @@ void Station<MESSAGE_TYPE>::receivedSetConfig(MESSAGE_TYPE p) {
 template <class MESSAGE_TYPE>
 Station<MESSAGE_TYPE>::~Station() {
 // TODO Auto-generated destructor stub
+}
+
+template <class MESSAGE_TYPE>
+bool Station<MESSAGE_TYPE>::write(MESSAGE_TYPE msg) {
+    uint8_t pipe = this->findChildPipe(msg.id_dest);
+    PRINT("PIPE---->");
+    PRINTln(pipe, HEX);
+    if (pipe != 0xFF) {
+        return writePipe(ID_TO_PIPE(pipe), msg);
+    } else {
+    	PRINT("PARENT---->");
+    	PRINTln(this->parentPipe);
+    	msg.print();
+    	return writePipe(ID_TO_PIPE(this->id),msg);
+    }
+    return false;
 }

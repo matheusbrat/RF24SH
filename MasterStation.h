@@ -34,8 +34,9 @@ public:
 	uint8_t freePipes(uint8_t id);
 	uint8_t getLevel(uint8_t id);
 	void testMessage();
+	bool write(MESSAGE_TYPE p);
 	uint8_t nextId;
-
+	int update(MESSAGE_TYPE p[5]);
 };
 
 #include "MasterStation-impl.h"
