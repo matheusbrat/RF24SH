@@ -64,6 +64,7 @@ public:
 	int update(MESSAGE_TYPE p[5]);
 	MESSAGE_TYPE readMaster();
 	bool write(MESSAGE_TYPE p);
+	MESSAGE_TYPE pickNewMessage(MESSAGE_TYPE p[5]);
 	uint8_t id;
 	uint8_t parentPipe;
 

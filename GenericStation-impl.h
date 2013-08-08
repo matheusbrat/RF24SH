@@ -271,4 +271,15 @@ template <class MESSAGE_TYPE>
 GenericStation<MESSAGE_TYPE>::~GenericStation() {
 }
 
+template <class MESSAGE_TYPE>
+MESSAGE_TYPE GenericStation<MESSAGE_TYPE>::pickNewMessage(MESSAGE_TYPE m[5]) {
+	for (int i = 0; i < 5; i++) {
+		if(m[i].id_dest == this->id && m[i].id_from != 0x00) {
+			MESSAGE_TYPE r = m[i];
+			m[i] = MESSAGE_TYPE(PMessage::TUSER,PMessage::CUSER,0,0,0,0,0);
+			return r;
+		}
+	}
+}
+
 

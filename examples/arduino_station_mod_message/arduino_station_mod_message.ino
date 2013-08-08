@@ -7,7 +7,7 @@
 
 Station<Message> * p;
 
-Message empty = Message(PMessage::TUSER,PMessage::CUSER,0,0,0,0,0,0);
+Message empty = Message(PMessage::TUSER,PMessage::CUSER,0,0,0,0,0);
 
 Message d[5] = {empty, empty, empty, empty, empty};
 bool details = false;
@@ -23,11 +23,12 @@ void setup() {
 void loop() {
   if(p->update(d) > 0) {
     PRINTln("RECEBI");
-    d[0].print();
-    d[0].extra = d[0].extra * 2;
-    uint8_t tmp = d[0].id_dest; 
-    d[0].id_dest = d[0].id_from;
-    d[0].id_from = tmp;
-    p->write(d[0]);
+    Message m = p->pickNewMessage(d);
+    m.print();
+    m.extra = m.extra * 2;
+    uint8_t tmp = m.id_dest; 
+    m.id_dest = m.id_from;
+    m.id_from = tmp;
+    p->write(m);
   }
 }
