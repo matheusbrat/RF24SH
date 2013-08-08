@@ -6,7 +6,17 @@
  */
 
 template <class MESSAGE_TYPE>
+MasterStation<MESSAGE_TYPE>::MasterStation(uint8_t ce, uint8_t csn) : GenericStation<MESSAGE_TYPE>(ce, csn) {
+    this->startup();
+}
+
+template <class MESSAGE_TYPE>
 MasterStation<MESSAGE_TYPE>::MasterStation() : GenericStation<MESSAGE_TYPE>() {
+	this->startup();
+}
+
+template <class MESSAGE_TYPE>
+void MasterStation<MESSAGE_TYPE>::startup() {
     (void)static_cast<PMessage*>((MESSAGE_TYPE*)0);
     for (int i = 0; i < 10; i++) {
         levels[i] = 0xFF;
@@ -24,6 +34,7 @@ MasterStation<MESSAGE_TYPE>::MasterStation() : GenericStation<MESSAGE_TYPE>() {
     lastAskConfig = 0;
     this->radio.openReadingPipe(1, ID_TO_PIPE(0x00));
 }
+
 
 template <class MESSAGE_TYPE>
 uint8_t MasterStation<MESSAGE_TYPE>::freePipes(uint8_t id) {

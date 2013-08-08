@@ -13,6 +13,8 @@
 
 template <class MESSAGE_TYPE>
 class Station: public GenericStation<MESSAGE_TYPE> {
+private:
+	void startup();
 protected:
 	enum FLAGS {
 		NOTHING, RETRANSMIT_FIRST, RETRANSMIT, WAITING
@@ -34,6 +36,7 @@ protected:
 
 public:
 	Station();
+	Station(uint8_t ce, uint8_t csn);
 	void begin();
 	bool write(MESSAGE_TYPE msg);
 	int update(MESSAGE_TYPE p[5]);

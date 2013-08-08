@@ -7,6 +7,17 @@
  */
 
 template <class MESSAGE_TYPE>
+GenericStation<MESSAGE_TYPE>::GenericStation(uint8_t ce, uint8_t csn) :
+#if defined(ARDUINO) || defined(__MK20DX128__)
+        radio(ce, csn)
+#else
+#warning Are you sure, you are calling the correct constructor?
+#endif
+{
+    this->startup();
+}
+
+template <class MESSAGE_TYPE>
 GenericStation<MESSAGE_TYPE>::GenericStation() :
 #if defined(ARDUINO) || defined(__MK20DX128__)
         radio(9, 10)
@@ -14,22 +25,28 @@ GenericStation<MESSAGE_TYPE>::GenericStation() :
         radio("/dev/spidev0.0",8000000 , 25)
 #endif
 {
-    (void)static_cast<PMessage*>((MESSAGE_TYPE*)0);
-    // FIX NUMBER FOUR MAGIC NUMBER
-    for (int i = 0; i < 4; i++) {
-        childPipes[i] = 0;
-        childNodes[i] = 0;
-        childNodesSize[i] = 0;
-    }
-    parentPipe = 0;
-    id = 0;
-    level = 0;
-    radio.begin();
-    radio.setRetries(15, 15);
-    radio.setPayloadSize(sizeof(MESSAGE_TYPE));
-    radio.openReadingPipe(0, PROTO_PIPE);
-    radio.startListening();
+    this->startup();
 }
+
+template <class MESSAGE_TYPE>
+void GenericStation<MESSAGE_TYPE>::startup() {
+	(void)static_cast<PMessage*>((MESSAGE_TYPE*)0);
+	// FIX NUMBER FOUR MAGIC NUMBER
+	for (int i = 0; i < 4; i++) {
+		childPipes[i] = 0;
+		childNodes[i] = 0;
+		childNodesSize[i] = 0;
+	}
+	parentPipe = 0;
+	id = 0;
+	level = 0;
+	radio.begin();
+	radio.setRetries(15, 15);
+	radio.setPayloadSize(sizeof(MESSAGE_TYPE));
+	radio.openReadingPipe(0, PROTO_PIPE);
+	radio.startListening();
+}
+
 
 template <class MESSAGE_TYPE>
 uint8_t GenericStation<MESSAGE_TYPE>::findOpenPipe() {
@@ -65,6 +82,7 @@ bool GenericStation<MESSAGE_TYPE>::writePipe(uint8_t pipeNumber, MESSAGE_TYPE p)
 template <class MESSAGE_TYPE>
 bool GenericStation<MESSAGE_TYPE>::write(MESSAGE_TYPE p) {
 	// Class that extend this must implement!
+	return false;
 }
 template <class MESSAGE_TYPE>
 bool GenericStation<MESSAGE_TYPE>::writePipe(uint64_t pipe, MESSAGE_TYPE p) {
@@ -280,6 +298,7 @@ MESSAGE_TYPE GenericStation<MESSAGE_TYPE>::pickNewMessage(MESSAGE_TYPE m[5]) {
 			return r;
 		}
 	}
+	return  MESSAGE_TYPE(PMessage::TUSER,PMessage::CUSER,0,0,0,0,0);
 }
 
 

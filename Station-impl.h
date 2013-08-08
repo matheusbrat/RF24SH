@@ -6,16 +6,26 @@
  */
 
 template <class MESSAGE_TYPE>
-Station<MESSAGE_TYPE>::Station() : GenericStation<MESSAGE_TYPE>() {
-    (void)static_cast<PMessage*>((MESSAGE_TYPE*)0);
-    flag = NOTHING;
-    forward = 0;
-    for (int i = 0; i < 5; i++) {
-        idSelection[i] = 0;
-        levelSelection[i] = 0;
-    }
-    control = 0;
+Station<MESSAGE_TYPE>::Station(uint8_t ce, uint8_t csn) : GenericStation<MESSAGE_TYPE>(ce, csn) {
+	this->startup();
 }
+template <class MESSAGE_TYPE>
+Station<MESSAGE_TYPE>::Station() : GenericStation<MESSAGE_TYPE>() {
+	this->startup();
+}
+
+template <class MESSAGE_TYPE>
+void Station<MESSAGE_TYPE>::startup() {
+	(void)static_cast<PMessage*>((MESSAGE_TYPE*)0);
+	flag = NOTHING;
+	forward = 0;
+	for (int i = 0; i < 5; i++) {
+		idSelection[i] = 0;
+		levelSelection[i] = 0;
+	}
+	control = 0;
+}
+
 template <class MESSAGE_TYPE>
 void Station<MESSAGE_TYPE>::begin() {
     PRINTln("DISCOVER WHO IS LISTENING");
@@ -153,7 +163,7 @@ template <class MESSAGE_TYPE>
 void Station<MESSAGE_TYPE>::receivedIListen(MESSAGE_TYPE p) {
     if (p.id_dest == 0x00 && this->id == 0x00) {
         if (control > 4) {
-            int bigger;
+            int bigger = 0;
             uint8_t temp = 0;
             for (int i = 0; i < 4; i++) {
                 if (levelSelection[i] > temp) {

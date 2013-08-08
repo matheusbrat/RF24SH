@@ -32,6 +32,8 @@
 
 template <class MESSAGE_TYPE>
 class GenericStation {
+private:
+	void startup();
 protected:
 	uint8_t childPipes[4];
 	uint8_t * childNodes[4];
@@ -61,6 +63,7 @@ public:
 	void readProtocol();
 	bool writePipe(uint8_t pipeNumber, MESSAGE_TYPE p);
 	GenericStation();
+	GenericStation(uint8_t ce, uint8_t csn);
 	int update(MESSAGE_TYPE p[5]);
 	MESSAGE_TYPE readMaster();
 	bool write(MESSAGE_TYPE p);

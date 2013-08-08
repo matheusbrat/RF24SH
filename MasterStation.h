@@ -13,6 +13,8 @@
 
 template <class MESSAGE_TYPE>
 class MasterStation: public GenericStation<MESSAGE_TYPE> {
+private:
+	void startup();
 protected:
 	uint8_t canTalkTo[10][5];
 	uint8_t levels[10];
@@ -24,6 +26,9 @@ protected:
 public:
 	MasterStation();
 	virtual ~MasterStation();
+	MasterStation(uint8_t ce, uint8_t csn);
+
+
 
 	void receivedWhoListen(MESSAGE_TYPE p);
 	void receivedIListen(MESSAGE_TYPE p);
