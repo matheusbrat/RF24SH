@@ -21,7 +21,7 @@ void setup() {
 }
 
 void testMessage() { 
-    Message t = Message(PMessage::TUSER, PMessage::CUSER, (p->nextId - 1), 0x01, 233, 255, 100, 25);
+    Message t = Message(PMessage::TUSER, PMessage::CUSER, (p->nextId - 1), 0x01, 233, 255, 100, 25.23);
     p->write(t);
 }
 void loop() {
